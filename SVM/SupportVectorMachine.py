@@ -9,14 +9,14 @@ import pandas as pd
 
 
 df = pd.read_csv('Social_Network_Ads.csv')
-X = df.iloc[:,1:-1].values
+X = df.iloc[:,0:-1].values
 y = df.iloc[:,-1].values
 
 
 from sklearn.preprocessing import LabelEncoder,OneHotEncoder
 labelencoder = LabelEncoder()
-X[:, 0] = labelencoder.fit_transform(X[:, 0])
-onehotencoder = OneHotEncoder(categorical_features = [0])
+X[:, 1] = labelencoder.fit_transform(X[:, 1])
+onehotencoder = OneHotEncoder(categorical_features = [1])
 X= onehotencoder.fit_transform(X).toarray()
 
 X = X[:,1:]
@@ -33,11 +33,17 @@ X_test = minmax.transform(X_test)
 
 
 from sklearn.svm import SVC
+from sklearn.feature_selection import RFE
+from sklearn.ensemble import ExtraTreesClassifier
 model = SVC(kernel = 'linear')
-model.fit(X_train,y_train)
+rfe = RFE(model,4)#X_train.shape[1])
+rfe.fit(X_train,y_train)
+rfe.ranking_
+rfe.n_features_
+rfe.support_
 
 
-predicted = model.predict(X_test)
+predicted = rfe.predict(X_test)
 
 from sklearn.metrics import confusion_matrix
 cm = confusion_matrix(y_test,predicted)
